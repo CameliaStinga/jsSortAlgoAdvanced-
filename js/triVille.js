@@ -101,12 +101,14 @@ function isLess(i, j) {
 /**
  * interverti la ville i avec la ville j dans la liste des villes
  * @param {*} i
- * @param {*} j
+ * @param {*} j  @param {*} tableau
  */
-function swap(i, j) {
-    let temp = listVille[i];
-    listVille[i] = listVille[j];
-    listVille[j] = temp;
+function swap(tableau, i, j) {
+   // [listVille[j], listVille[i]]=[listVille[i], listVille[j]]
+    let temp = tableau[i];
+    tableau[i] = tableau[j];
+    tableau[j] = temp;
+    nbPermutation++;
 
 
 }
@@ -114,115 +116,121 @@ function swap(i, j) {
 function sort(type) {
     switch (type) {
         case 'insert':
-            insertsort(listVille);
+            listVille = insertsort(listVille);
             break;
         case 'select':
-            selectionsort(listVille);
+            listVille = selectionsort(listVille);
             break;
         case 'bubble':
-            bubblesort(listVille);
+            listVille = bubblesort(listVille);
             break;
         case 'shell':
-            shellsort(listVille);
+            listVille = shellsort(listVille);
             break;
         case 'merge':
             listVille = mergesort(listVille, 0, listVille.length - 1);
             break;
         case 'heap':
-            heapsort(listVille);
-
+            listVille = heapsort(listVille, 0, listVille.length - 1);
             break;
         case 'quick':
-            quicksort(listVille);
+            listVille = quicksort(listVille, 0, listVille.length - 1);
             break;
     }
 }
 
 //tri par insertion
-function insertsort(listVille) {
-    let i;
-    for (i = 0; i < listVille.length; i++) {
-        let temp = listVille[i];
+function insertsort(tableau) {
+   // nbPermutation = 0;
+    tableau = [...tableau];
+    for (let i = 0; i < tableau.length; i++) {
+        let temp = tableau[i];
         let j = i;
-        while (j > 0 && isLess(temp, listVille[j - 1])) {
-            listVille[j] = listVille[j - 1];
-            j = j - 1;
-
+        while (j > 0 && isLess(temp, tableau[j - 1])) {
+            swap(tableau, j, j - 1);
+            j=j-1;
         }
-        listVille[j] = temp
+        tableau[j] = temp;
 
     }
-    return listVille;
-
+    return tableau;
 }
 
 //tri par selection
-function selectionsort(listVille) {
-    for (let i = 0; i < listVille.length; i++) {
+function selectionsort(tableau) {
+   // nbPermutation = 0;
+    tableau = [...tableau];
+    for (let i = 0; i < tableau.length; i++) {
         let min = i;
-        for (let j = i + 1; j < listVille.length; j++) {
-            if (isLess(listVille[j], listVille[min])) {
+        for (let j = i + 1; j < tableau.length; j++) {
+            if (isLess(tableau[j], tableau[min])) {
                 min = j;
             }
         }
-        swap(i, min);
+        swap(tableau, i, min);
     }
-    return listVille;
+    return tableau;
 
 }
 
 //tri à bulles
-function bubblesort(listVille) {
-    let passage = 0;                                 //passage <-0
-    let permutation = true;                         //permut<-vrai
-    while (permutation) {                     //tant que permut est vrai
-        permutation = false;                          //permut <-faux
+function bubblesort(tableau) {
+   // nbPermutation = 0;
+    tableau = [...tableau];
+    let passage = 0;                                               //passage <-0
+    let permut = true;                                               //permut<-vrai
+    while (permut===true) {                                           //tant que permut est vrai
+        permut = false;                                               //permut <-faux
         passage++;
-        for (let i = 0; i < listVille.length - 1; i++) {      //pour i de 0 à n-1
-            if (isLess(listVille[i + 1], listVille[i])) {    // si T[i]>T[i+1]
-                permutation = true;                 //permut<-vrai
-                swap(i, i + 1);                         //on échange les deux éléments;
-
+        for (let i = 0; i < tableau.length - 1; i++) {                 //pour i de 0 à n-1
+            if (isLess(tableau[i + 1], tableau[i])) {                   // si T[i]>T[i+1]
+                //permut<-vrai
+                swap(tableau, i, i + 1);                               //on échange les deux éléments;
+                permut = true;
             }
         }
         //fin pour
     }
-    return listVille;
+    return tableau;
 
 }
 
 //tri shell
-function shellsort(listVille) {
-    let longueur = listVille.length;                                    // longueur ← taille(T)
-    let n = 0;                                                           // n ← 0; le pas
-    while (n < longueur) {                                                 // Tant que n<longueur faire
-        n = (3 * n + 1);    //console.log(n)                                                 // #calcul du plus grand décalage possible
-    }                                                                       // n ← (3*n+1)
-    while (n != 0) {                                                         // fin tantque
+function shellsort(tableau) {
+   // nbPermutation = 0;
+    tableau = [...tableau];
+    let longueur = tableau.length;                                           // longueur ← taille(T)
+    let n = 0;                                                              // n ← 0; le pas
+    while (n < longueur) {                                                   // Tant que n<longueur faire
+        n = (3 * n + 1);                                                           // #calcul du plus grand décalage possible
+    }                                                                        // n ← (3*n+1)
+    while (n !== 0) {                                                         // fin tantque
         n = Math.floor(n / 3);  //console.log(n)                          // Tant que n différent de 0 faire
-        for (let i = n; i < longueur; i++) {                               // n ← (n/3)
-            let temp = listVille[i];                                     // pour i=n à longueur faire
-            let j = i;                                                    // valeur ← T(i) //valeur à décaler (éventuellement)
-            while ((j > n - 1) && isLess(temp, listVille[j - n]))             // j ← i
+        for (let i = n; i < longueur; i++) {                                  // n ← (n/3)
+            let temp = tableau[i];                                           // pour i=n à longueur faire
+            let j = i;  // nbPermutation++;                                   // valeur ← T(i) //valeur à décaler (éventuellement)
+            while ((j > n - 1) && isLess(temp, tableau[j - n]))               // j ← i
             {
-                listVille[j] = listVille[j - n]                                 // Tant que (j>n-1) et (T(j-n)>valeur)
-                j = j - n;                                                       // T(j) ← T(j-n) //décalage des valeurs avec un pas de n
-            }                                                                    // j ← j-n
-            listVille[j] = temp;                                          // fin tantque
-        }                                                                           // T(j) ← valeur
-    }
-    return listVille;
+                swap(tableau, j, j-n)  //tableau[j] = tableau[j - n]
+                j = j - n;
+            }                                                                     // Tant que (j>n-1) et (T(j-n)>valeur)
+           tableau[j]=temp;                                                      // T(j) ← T(j-n) //décalage des valeurs avec un pas de n
+        }                                                                        // j ← j-n
+    }                                                                            // fin tantque
+    return tableau;                                                             // T(j) ← valeur
 }
 
+
 //tri par fusion
-function mergesort(listVille) {                                                      // procédure tri_fusion (tableau T[1, …, n]) with 1 ==> 0 and n ==> n-1
-    let n = listVille.length                                                       // avec n = T.length
+function mergesort(tableau) {
+    tableau = [...tableau];                                               // procédure tri_fusion (tableau T[1, …, n]) with 1 ==> 0 and n ==> n-1
+    let n = tableau.length                                                       // avec n = T.length
     if (n <= 1) {                                                               // si n ≤ 1
-        return listVille                                                           // renvoyer T
+        return tableau;                                                         // renvoyer T
     } else {                                                                  // sinon
         return merge(                                                            // renvoyer fusion(triFusion(T[1, …, n/2]), triFusion(T[n/2 + 1, …, n]) avec fusion(left, right)
-            mergesort(listVille.slice(0, Math.floor(n / 2))),                  // moitié gauche => .slice(début, fin) pour couper le tableau en 2 avec début = index 0 et fin = n/2 (Math.floor car nombre d'index impair après slice)
-            mergesort(listVille.slice(Math.floor(n / 2), n))                   // moitié droite => .slice(début, fin) pour couper le tableau en 2 avec début = n/2 (Math.floor car nombre d'index impair après slice) et fin = n
+            mergesort(tableau.slice(0, Math.floor(n / 2))),                  // moitié gauche => .slice(début, fin) pour couper le tableau en 2 avec début = index 0 et fin = n/2 (Math.floor car nombre d'index impair après slice)
+            mergesort(tableau.slice(Math.floor(n / 2), n))                   // moitié droite => .slice(début, fin) pour couper le tableau en 2 avec début = n/2 (Math.floor car nombre d'index impair après slice) et fin = n
         )
     }
 }                                                                               // fin
@@ -231,98 +239,92 @@ function merge(left, right) {                                                  /
         return right                                                            // renvoyer B
     } else if (right.length === 0) {                                             // si B est le tableau vide
         return left                                                             // renvoyer A
-    } else if (isLess(left[0], right[0])) {                                            // si A[1] ≤ B[1] où 1 correspond à la valeur de l'index 0
-        return [left[0]].concat(merge(left.slice(1, left.length), right))      // renvoyer A[1] ⊕ fusion(A[2, …, a], B) où 2 correspond à la valeur de l'index 1
-    } else {                                                                    // sinon
+    } else if (isLess(left[0], right[0])) {
+        //nbPermutation++;     //49 permut                                      // si A[1] ≤ B[1] où 1 correspond à la valeur de l'index 0
+        return [left[0]].concat(merge(left.slice(1, left.length), right))
+
+        // renvoyer A[1] ⊕ fusion(A[2, …, a], B) où 2 correspond à la valeur de l'index 1
+    } else {
+        //nbPermutation++;  //51 permut                                                          // sinon
         return [right[0]].concat(merge(left, right.slice(1, right.length)))    // renvoyer B[1] ⊕ fusion(A, B[2, …, b])
     }
+
+
 }
 
 
 //tri par tas
-function heapsort(listVille) {
+function heapsort(tableau) {
+    //nbPermutation = 0;
+    tableau = [...tableau];
     let i;
-    organiser(listVille);
-    for (i = listVille.length - 1; i > 0; i--) {
-        swap(0, i);
-        redescendre(listVille, i, 0);
+    organiser(tableau);
+    for (i = tableau.length - 1; i > 0; i--) {
+        swap(tableau, 0, i);
+        redescendre(tableau, i, 0);
 
     }
-    return listVille
+    return tableau
 }
 
-function organiser(listVille) {
+function organiser(tableau) {
 
     let i; //index tableau
-    for (i = 0; i < listVille.length - 1; i++) {
-        remonter(listVille, i);
+    for (i = 0; i < tableau.length - 1; i++) {
+        remonter(tableau, i);
 
     }
 }
 
-function remonter(listVille, index) {
-    // if(index==0){
-    //     return triNombres;
-    // }
-    if (isLess(listVille[Math.floor(index / 2)], listVille[index])) {
-        swap(index, Math.floor(index / 2));
-        remonter(listVille, Math.floor(index / 2))
+function remonter(tableau, index) {
+
+    if (isLess(tableau[Math.floor(index / 2)], tableau[index])) {
+        swap(tableau, index, Math.floor(index / 2));
+        remonter(tableau, Math.floor(index / 2))
     }
 }
 
-function redescendre(listVille, element, index) {
+function redescendre(tableau, element, index) {
     let max;
     let formule = 2 * index + 1;
     if (formule < element) {
-        if (isLess(listVille[2 * index], listVille[formule])) {
+        if (isLess(tableau[2 * index], tableau[formule])) {
             max = formule;
         } else {
             max = 2 * index;
         }
 
-        if (isLess(listVille[index], listVille[max])) {
-            swap(max, index);
-            redescendre(listVille, element, max);
+        if (isLess(tableau[index], tableau[max])) {
+            swap(tableau, max, index);
+            redescendre(tableau, element, max);
         }
     }
 }
-
-
-// function echanger(listVille, indexA, indexB) {
-//     let temp = listVille[indexA];
-//     listVille[indexA] = listVille[indexB];
-//     listVille[indexB] = temp;
-//
-// }
 
 
 //tri rapide
-function quicksort(listVille, indexleft = 0, indexright = listVille.length - 1) {
-    if (indexleft < indexright) {                                      //left et right sont des index; l'index du premier element infèrieur à l'index du dernier element
-        //on compare ensuite les valeurs correspondantes aux index         // si premier < dernier alors
-        let pi = partitionner(listVille, indexleft, indexright)    // partionnement de tout mon tableau; pi nous donne l'endroit ou on doit couper le tableau                                            // pi ← partitionner(tableau, premier, dernier) # pi : index de partitionnement
-        quicksort(listVille, indexleft, pi - 1)            //tant qu'il n'a pas fini la partie gauche il ne rentre pas dans la partie droite                                                          // tri_rapide(tableau, premier, pi - 1)
-        quicksort(listVille, pi + 1, indexright)                                                                                                                                               // tri_rapide(tableau, pi + 1, dernier)
+function quicksort(tableau, indexleft, indexright) {
+    // nbPermutation = 0;
+    // tableau = [...tableau];
+    if (indexleft < indexright) {
+
+        let pi = partitionner(tableau, indexleft, indexright)               // pi ← partitionner(tableau, premier, dernier) # pi : index de partitionnement
+        quicksort(tableau, indexleft, pi - 1)                //tant qu'il n'a pas fini la partie gauche il ne rentre pas dans la partie droite
+        quicksort(tableau, pi + 1, indexright)
     }
-    return listVille;
+    return tableau;
 }
 
-function swap(listVille, indexleft, indexright) {
-    let temp = listVille[indexleft];
-    listVille[indexleft] = listVille[indexright];
-    listVille[indexright] = temp;
-}
-
-function partitionner(listVille, indexleft, indexright) {
+function partitionner(tableau, indexleft, indexright) {
     let pivot = indexright;
     let j = indexleft;
     for (let i = indexleft; i < indexright; i++) {
-        if (isLess(listVille[i], listVille[pivot])) {
-            swap(listVille, i, j);
+        if (isLess(tableau[i], tableau[pivot])) {
+            swap(tableau, i, j);
             j++;
         }
     }
-    swap(listVille, indexright, j)
+    swap(tableau, indexright, j)
     return j
 }
 
@@ -349,7 +351,7 @@ function displayListVille() {
     document.getElementById("navp").innerHTML = "";
     displayPermutation(nbPermutation);
     let mainList = document.getElementById("navp");
-    for (var i = 0; i < listVille.length; i++) {
+    for (let i = 0; i < listVille.length; i++) {
         let item = listVille[i];
         let elem = document.createElement("li");
         elem.innerHTML = item.nom_commune + " - \t" + Math.round(item.distanceFromGrenoble * 100) / 100 + ' km';
